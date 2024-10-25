@@ -44,7 +44,7 @@ clock = pygame.time.Clock()
 # Тут опишите все классы игры.
 class GameObject:
     def __init__(self, _color):
-        self.body_color = ""
+        self.body_color = (0, 0, 0)
         self.position = (16, 12)
 
     def draw(self):
@@ -65,7 +65,36 @@ class Snake(GameObject):
             self.next_direction = None
 
     def move(self):
-        pass
+        if self.direction == RIGHT:
+            self.positions.insert(0,
+                                  (
+                                      (self.get_head_position()[0] + 1) % 32,
+                                      self.get_head_position()[0]
+                                  ))
+            self.positions.pop(-1)
+        elif self.direction == LEFT:
+            self.positions.insert(0,
+                                  (
+                                      (self.get_head_position()[0] - 1) % 32,
+                                      self.get_head_position()[0]
+                                  ))
+            self.positions.pop(-1)
+        elif self.direction == UP:
+            self.positions.insert(0,
+                                  (
+                                      self.get_head_position()[0],
+                                      (self.get_head_position()[0] - 1) % 24
+                                  ))
+            self.positions.pop(-1)
+        elif self.direction == DOWN:
+            self.positions.insert(0,
+                                  (
+                                      self.get_head_position()[0],
+                                      (self.get_head_position()[0] + 1) % 24
+                                  ))
+            self.positions.pop(-1)
+
+
 
     def draw(self):
         for position in self.positions[:-1]:
@@ -99,7 +128,7 @@ class Apple(GameObject):
         self.randomize_position()
 
     def randomize_position(self):
-        self.position = (randint(1, 32), randint(1, 24))
+        self.position = (randint(0, 31), randint(0, 23))
 
     def draw(self):
         rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
@@ -133,11 +162,17 @@ def main():
     while True:
         clock.tick(SPEED)
 
+        snake.draw()
+        apple.draw()
+        pygame.display.update()
+
         handle_keys(snake)
         snake.update_direction()
         snake.move()
 
-        
+        # Проверка на яблоко
+
+        # Проверка на столкновение
 
 
 
