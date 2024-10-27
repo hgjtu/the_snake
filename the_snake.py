@@ -85,7 +85,7 @@ class Snake(GameObject):
 
     def draw(self):
         """Переопределенный метод для отрисовки"""
-        for position in self.positions[:-1]:
+        for position in self.positions:
             rect = pygame.Rect(position, (GRID_SIZE, GRID_SIZE))
             pygame.draw.rect(screen, self.body_color, rect)
             pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
@@ -120,7 +120,7 @@ class Apple(GameObject):
         super().__init__(APPLE_COLOR, self.randomize_position())
 
     def randomize_position(self):
-        """Метод для получения случайной позиции яблока"""
+        """Метод для получения случайной позиции для яблока"""
         return (
             randint(0, GRID_WIDTH - 1) * GRID_SIZE,
             randint(0, GRID_HEIGHT - 1) * GRID_SIZE,
@@ -148,6 +148,9 @@ def handle_keys(game_object):
                 game_object.next_direction = LEFT
             elif event.key == pygame.K_RIGHT and game_object.direction != LEFT:
                 game_object.next_direction = RIGHT
+            elif event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                raise SystemExit
 
 
 def main():
@@ -156,6 +159,8 @@ def main():
 
     snake = Snake()
     apple = Apple()
+    while apple.position in snake.positions:
+        apple.position = apple.randomize_position()
 
     while True:
         clock.tick(SPEED)
@@ -168,8 +173,10 @@ def main():
         if snake.positions[0] == apple.position:
             snake.length += 1
             apple.position = apple.randomize_position()
+            while apple.position in snake.positions:
+                apple.position = apple.randomize_position()
 
-        if snake.positions[0] in snake.positions[1:]:
+        if (snake.positions[0] in snake.positions[1:]) and snake.length > 4:
             snake.reset()
 
         snake.draw()
